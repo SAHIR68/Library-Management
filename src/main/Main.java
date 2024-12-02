@@ -13,6 +13,7 @@ import user.service.UserService;
 import user.service.UserServiceImpl;
 
 import javax.xml.crypto.Data;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -33,18 +34,6 @@ public class Main {
             showMainMenu();
             havingConsule = showUserMenu();
         }
-    }
-
-    private String getStringFromUser() {
-        Scanner scanner = new Scanner(System.in);
-        String s = scanner.nextLine();
-        return s;
-    }
-
-    private Integer getIntegerFromUser() {
-        Scanner scanner = new Scanner(System.in);
-        Integer s = scanner.nextInt();
-        return s;
     }
 
     void showMainMenu() {
@@ -114,8 +103,8 @@ public class Main {
                 switch (bookCommand) {
                     case 1 -> {
                         BookDTO bookDTO = new BookDTO();
-                        setBookProperties(bookDTO);
                         BookDAO bookDAO = new BookDAO();
+                        setBookProperties(bookDTO);
                         Integer lastBookId = bookDAO.getBookCount();
                         bookDTO.setId(lastBookId + 1);
                         System.out.printf("\n This book has the id of %d\n", bookDTO.getId());
@@ -245,8 +234,13 @@ public class Main {
         Integer monthOfBirth = Integer.parseInt(birthDay.substring(5, 7));
         Integer dayOfBirth = Integer.parseInt(birthDay.substring(8, 10));
         Date birthDate = new Date();
-        birthDate.setYear(yearOfBirth - 1900);
-        birthDate.setMonth(monthOfBirth);
+        if (yearOfBirth > 1900) {
+            birthDate.setYear(1900 -yearOfBirth );
+        }
+        else
+            birthDate.setYear( yearOfBirth - 1900);
+
+        birthDate.setMonth(monthOfBirth-1);
         birthDate.setDate(dayOfBirth);
         return birthDate;
     }
