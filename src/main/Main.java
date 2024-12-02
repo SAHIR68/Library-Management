@@ -12,10 +12,7 @@ import user.dto.UserDTO;
 import user.service.UserService;
 import user.service.UserServiceImpl;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -170,8 +167,7 @@ public class Main {
                                     loanService.addLoan(loanDTO);
                                 } else
                                     System.out.println("You have borrowed 3 books!!");
-                            }
-                            else
+                            } else
                                 System.out.println("This book already have borrowed!!!");
                         } else
                             System.out.println("Not Found!!");
@@ -181,16 +177,13 @@ public class Main {
                         LoanDTO loanDTO = null;
                         LoanServiceImpl loanService = new LoanServiceImpl();
                         loanDTO = getLoanedProperties();
-                        Integer loanId = loanDAO.findLoanId(loanDTO.getUserDTO().getId(),loanDTO.getBookDTO().getId());
-                        loanDTO = loanDAO.findLoanById(loanId);
-                        if ((loanDTO.getUserDTO().getId() != null) && (loanDTO.getBookDTO().getId() != null)) {
-                            if (loanDAO.isBookLoaned(loanDTO.getBookDTO().getId())) {
-
-                                    loanService.returnBook(loanDTO);
+                        for (LoanDTO loanDTO1 : loanDAO.getLoanDTOSFromDatabase()) {
+                            if ((loanDTO1.getUserDTO().getId() == loanDTO.getUserDTO().getId()) && (loanDTO1.getBookDTO().getId() == loanDTO.getBookDTO().getId())) {
+                                loanService.returnBook(loanDTO1);
+                                break;
                             } else
-                                System.out.println("You have returned this book before!");
-                        } else
-                            System.out.println("You have not borrowed this book!!!");
+                                System.out.println("You have not borrowed this book!!!");
+                        }
                     }
                     case 0 -> {
                         LoanDAO loanDAO = new LoanDAO();
@@ -244,7 +237,7 @@ public class Main {
         Integer monthOfBirth = Integer.parseInt(birthDay.substring(5, 7));
         Integer dayOfBirth = Integer.parseInt(birthDay.substring(8, 10));
         Date birthDate = new Date();
-        birthDate.setYear(yearOfBirth-1900);
+        birthDate.setYear(yearOfBirth - 1900);
         birthDate.setMonth(monthOfBirth);
         birthDate.setDate(dayOfBirth);
         return birthDate;
@@ -330,18 +323,24 @@ public class Main {
         return age;
     }
 
-    public LoanDTO getLoanedProperties(){
+    public LoanDTO getLoanedProperties() {
         LoanDAO loanDAO = new LoanDAO();
         LoanDTO loanDTO = new LoanDTO();
+        UserDTO userDTO = new UserDTO();
+        BookDTO bookDTO = new BookDTO();
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter your id: ");
         Integer returnUserId = scanner.nextInt();
+        userDTO.setId(returnUserId);
         System.out.println("Please enter the book id you want to return: ");
         Integer returnBookId = scanner.nextInt();
-        LoanServiceImpl loanService = new LoanServiceImpl();
+        bookDTO.setId(returnBookId);
+        /*LoanServiceImpl loanService = new LoanServiceImpl();
         loanDTO = loanService.searchLoanDTO(returnUserId, returnBookId);
         loanDTO.setId(loanDAO.findLoanId(returnUserId,returnBookId));
-        loanDTO = loanDAO.findLoanById(loanDTO.getId());
+        loanDTO = loanDAO.findLoanById(loanDTO.getId());*/
+        loanDTO.setUserDTO(userDTO);
+        loanDTO.setBookDTO(bookDTO);
         return loanDTO;
     }
 }

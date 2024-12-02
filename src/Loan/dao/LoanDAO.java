@@ -64,7 +64,34 @@ public class LoanDAO {
         return isLoaned;
     }
 
-    public LoanDTO findLoanById(int loanId) {
+    public List<LoanDTO> getLoanDTOSFromDatabase() {
+        List<LoanDTO> allLoans = new ArrayList<>();
+        String SQL_SELECT = "SELECT * FROM tbl_loan";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
+
+            while (resultSet.next()) {
+                LoanDTO loanDTO = new LoanDTO();
+                UserDTO userDTO = new UserDTO();
+                BookDTO bookDTO = new BookDTO();
+                loanDTO.setId(resultSet.getInt("c_id"));
+                userDTO.setId(resultSet.getInt("c_userId"));
+                bookDTO.setId(resultSet.getInt("c_bookId"));
+                loanDTO.setBorrowingDate(resultSet.getDate("c_borrowingDate"));
+                loanDTO.setReturningDate(resultSet.getDate("c_returningDate"));
+                loanDTO.setUserDTO(userDTO);
+                loanDTO.setBookDTO(bookDTO);
+                allLoans.add(loanDTO);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return allLoans;
+    }
+/*    public LoanDTO findLoanById(int loanId) {
         String SQL_SELECT = "SELECT c_userId, c_bookId, c_borrowingDate, c_returningDate FROM tbl_loan WHERE c_id = ?";
         LoanDTO loan = new LoanDTO();
 
@@ -127,7 +154,7 @@ public class LoanDAO {
         }
 
         return loanId;
-    }
+    }*/
 
     public void deleteLoanById(int loanId) {
 
