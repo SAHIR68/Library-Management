@@ -12,12 +12,11 @@ import user.dto.UserDTO;
 import user.service.UserService;
 import user.service.UserServiceImpl;
 
+import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
-    public static Integer numberOfUsers = 0;
-    public static Integer numberOfBooks = 0;
 
     public static void main(String[] args) {
 
@@ -193,7 +192,16 @@ public class Main {
                 }
             }
             case 4 -> {
-
+                LoanDAO loanDAO = new LoanDAO();
+                Date today = new Date();
+                for (LoanDTO loanDTO: loanDAO.getLoanDTOSFromDatabase()) {
+                    if (loanDTO.getReturningDate().getTime() < today.getTime()){
+                        System.out.println(loanDTO);
+                    }
+                    else {
+                        System.out.println("We don't have any delayed loan!");
+                    }
+                }
             }
             case 5 -> {
                 showSearchMenu();
@@ -324,7 +332,6 @@ public class Main {
     }
 
     public LoanDTO getLoanedProperties() {
-        LoanDAO loanDAO = new LoanDAO();
         LoanDTO loanDTO = new LoanDTO();
         UserDTO userDTO = new UserDTO();
         BookDTO bookDTO = new BookDTO();
@@ -335,10 +342,6 @@ public class Main {
         System.out.println("Please enter the book id you want to return: ");
         Integer returnBookId = scanner.nextInt();
         bookDTO.setId(returnBookId);
-        /*LoanServiceImpl loanService = new LoanServiceImpl();
-        loanDTO = loanService.searchLoanDTO(returnUserId, returnBookId);
-        loanDTO.setId(loanDAO.findLoanId(returnUserId,returnBookId));
-        loanDTO = loanDAO.findLoanById(loanDTO.getId());*/
         loanDTO.setUserDTO(userDTO);
         loanDTO.setBookDTO(bookDTO);
         return loanDTO;
