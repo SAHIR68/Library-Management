@@ -67,15 +67,13 @@ public class Main {
 
                     }
                     case 2 -> {
-                        System.out.println("Please enter the ID: ");
-                        Integer readID = scanner.nextInt();
+                        Integer readID = getIdOfUserInConsule();
                         UserDTO userDTO = new UserDTO();
                         UserService userService = new UserServiceImpl();
                         userService.readUser(readID);
                     }
                     case 3 -> {
-                        System.out.println("Please enter the ID: ");
-                        Integer updateID = scanner.nextInt();
+                        Integer updateID = getIdOfUserInConsule();
                         UserDTO userDTO = new UserDTO();
                         UserService userService = new UserServiceImpl();
                         userDTO = userService.updateUser(updateID);
@@ -336,6 +334,14 @@ public class Main {
         loanDTO.setUserDTO(userDTO);
         loanDTO.setBookDTO(bookDTO);
         return loanDTO;
+    }
+
+    public Integer getIdOfUserInConsule(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the ID: ");
+        Integer readID = scanner.nextInt();
+        return readID;
+
     }
 }
 
