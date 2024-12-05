@@ -68,7 +68,6 @@ public class Main {
                     }
                     case 2 -> {
                         Integer readID = getIdOfUserInConsule();
-                        UserDTO userDTO = new UserDTO();
                         UserService userService = new UserServiceImpl();
                         userService.readUser(readID);
                     }
@@ -80,8 +79,7 @@ public class Main {
                         setUserProperties(userDTO);
                     }
                     case 4 -> {
-                        System.out.println("Please enter the ID: ");
-                        Integer deleteID = scanner.nextInt();
+                        Integer deleteID = getIdOfUserInConsule();
                         UserDTO userDTO = new UserDTO();
                         UserService userService = new UserServiceImpl();
                         userService.deleteUser(deleteID);
@@ -107,24 +105,21 @@ public class Main {
                         bookService.addBook(bookDTO);
                     }
                     case 2 -> {
+                        Integer readBookId = getIdOfBookInConsule();
                         BookDTO bookDTO = new BookDTO();
-                        System.out.println("Please enter the book's id: ");
-                        Integer readBookId = scanner.nextInt();
                         BookService bookService = new BookServiceImpl();
                         bookService.readBook(readBookId);
                     }
                     case 3 -> {
+                        Integer updateBookId = getIdOfBookInConsule();
                         BookDTO bookDTO = new BookDTO();
-                        System.out.println("Please enter the book's Id: ");
-                        Integer updateBookId = scanner.nextInt();
                         BookService bookService = new BookServiceImpl();
                         bookDTO = bookService.updateBook(updateBookId);
                         setBookProperties(bookDTO);
                     }
                     case 4 -> {
+                        Integer deleteBookId = getIdOfBookInConsule();
                         BookDTO bookDTO = new BookDTO();
-                        System.out.println("Please enter the book's Id: ");
-                        Integer deleteBookId = scanner.nextInt();
                         BookService bookService = new BookServiceImpl();
                         bookService.deleteBook(deleteBookId);
                     }
@@ -341,7 +336,12 @@ public class Main {
         System.out.println("Please enter the ID: ");
         Integer readID = scanner.nextInt();
         return readID;
-
+    }
+    public Integer getIdOfBookInConsule(){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the book's id: ");
+        Integer readBookId = scanner.nextInt();
+        return readBookId;
     }
 }
 
