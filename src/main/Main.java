@@ -11,9 +11,6 @@ import user.dao.UserDAO;
 import user.dto.UserDTO;
 import user.service.UserService;
 import user.service.UserServiceImpl;
-
-import javax.xml.crypto.Data;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.Scanner;
 
