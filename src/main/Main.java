@@ -2,6 +2,7 @@ package main;
 
 import Loan.dao.LoanDAO;
 import Loan.dto.LoanDTO;
+import Loan.service.LoanService;
 import Loan.service.LoanServiceImpl;
 import book.dao.BookDAO;
 import book.dto.BookDTO;
@@ -138,17 +139,7 @@ public class Main {
                         LoanDTO loanDTO = new LoanDTO();
                         LoanServiceImpl loanService = new LoanServiceImpl();
                         loanDTO = getLoanedProperties();
-                        if ((loanDTO.getBookDTO().getId() != null) && (loanDTO.getUserDTO().getId() != null)) {
-                            if (!loanDAO.isBookLoaned(loanDTO.getBookDTO().getId())) {
-                                if ((loanService.numberOfBorrowedBooks(loanDTO) < 3)) {
-                                    loanService.borrowBook(loanDTO);
-                                    loanService.addLoan(loanDTO);
-                                } else
-                                    System.out.println("You have borrowed 3 books!!");
-                            } else
-                                System.out.println("This book already have borrowed!!!");
-                        } else
-                            System.out.println("Not Found!!");
+                        checkBorrowingConditions(loanDTO,loanDAO,loanService);
                     }
                     case 2 -> {
                         LoanDAO loanDAO = new LoanDAO();
@@ -342,6 +333,19 @@ public class Main {
         System.out.println("Please enter the book's id: ");
         Integer readBookId = scanner.nextInt();
         return readBookId;
+    }
+    public void checkBorrowingConditions(LoanDTO loanDTO, LoanDAO loanDAO, LoanServiceImpl loanService){
+        if ((loanDTO.getBookDTO().getId() != null) && (loanDTO.getUserDTO().getId() != null)) {
+            if (!loanDAO.isBookLoaned(loanDTO.getBookDTO().getId())) {
+                if ((loanService.numberOfBorrowedBooks(loanDTO) < 3)) {
+                    loanService.borrowBook(loanDTO);
+                    loanService.addLoan(loanDTO);
+                } else
+                    System.out.println("You have borrowed 3 books!!");
+            } else
+                System.out.println("This book already have borrowed!!!");
+        } else
+            System.out.println("Not Found!!");
     }
 }
 
