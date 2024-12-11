@@ -24,7 +24,6 @@ public class LoanServiceImpl implements LoanService {
     public void borrowBook(LoanDTO loanDTO) {
         LoanDAO loanDAO = new LoanDAO();
         loanDTO.getBookDTO().setReserve(true);
-        loanDAO.addLoaned(loanDTO);//adding loaned to the loanDTOS
         Date today = new Date();
         Date backDay = new Date();
         backDay.setMonth(today.getMonth() + 1);
@@ -86,7 +85,7 @@ public class LoanServiceImpl implements LoanService {
         Integer numberOfBooks = 0;
         LoanDAO loanDAO = new LoanDAO();
         List<LoanDTO> allLoanDTO = new ArrayList<>();
-        allLoanDTO = loanDAO.getAllLoaned();
+        allLoanDTO = loanDAO.getLoanDTOSFromDatabase();
         for (LoanDTO loanDTO1 : allLoanDTO) {
             if (loanDTO1.getUserDTO().equals(loanDTO.getUserDTO())) {
                 if (loanDTO1.getBookDTO().isReserved())
@@ -96,17 +95,5 @@ public class LoanServiceImpl implements LoanService {
         return numberOfBooks;
     }
 
-    /*public boolean belongBookToUser(LoanDTO loanDTO) {
-        boolean belongs = false;
-        LoanDAO loanDAO = new LoanDAO();
-        List<LoanDTO> allLoanDTO = new ArrayList<>();
-        allLoanDTO = loanDAO.getAllLoaned();
-        for (LoanDTO loanDTO1 : allLoanDTO) {
-            belongs = loanDTO1.getUserDTO().equals(loanDTO.getUserDTO()) && (loanDTO1.getBookDTO().equals(loanDTO.getBookDTO()));
-            if (belongs)
-                break;
-        }
-        return belongs;
-    }*/
 }
 

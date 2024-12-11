@@ -1,6 +1,7 @@
 package book.dao;
 
 import book.dto.BookDTO;
+import config.StaticString;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class BookDAO {
-    private static List<BookDTO> bookDTOS = new ArrayList<>();
+  /*  private static List<BookDTO> bookDTOS = new ArrayList<>();
 
     public void addBook(BookDTO bookDTO) {
         bookDTOS.add(bookDTO);
@@ -25,12 +26,12 @@ public class BookDAO {
                 bookDTO1 = bookDTO;
         }
         return bookDTO1;
-    }
+    }*/
 
     public void addBookToDatabase(BookDTO bookDTO) {
         String SQL_INSERT = "INSERT INTO tbl_book (c_title, c_writer, c_reserve) VALUES (?,?,?)";
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_INSERT)) {
 
             preparedStatement.setString(1, bookDTO.getTitle());
@@ -39,8 +40,8 @@ public class BookDAO {
 
             int row = preparedStatement.executeUpdate();
 
-            // rows affected
-            System.out.println(row); //1
+
+            System.out.println(row);
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
@@ -54,7 +55,7 @@ public class BookDAO {
         int count = 0;
 
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_COUNT)) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -76,7 +77,7 @@ public class BookDAO {
         BookDTO book = new BookDTO();
 
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
 
             preparedStatement.setInt(1, id);
@@ -104,7 +105,8 @@ public class BookDAO {
     public void updateBookReservationStatus(int bookId, boolean isReserved) {
         String SQL_UPDATE = "UPDATE tbl_book SET c_reserve = ? WHERE c_id = ?";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_UPDATE)) {
             preparedStatement.setBoolean(1, isReserved);
             preparedStatement.setInt(2, bookId);
@@ -115,5 +117,28 @@ public class BookDAO {
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
         }
+    }
+
+    public List<BookDTO> readBooksFromDatabase() {
+        List<BookDTO> allBooks = new ArrayList<>();
+        String SQL_SELECT = "SELECT * FROM tbl_book";
+
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
+
+            while (resultSet.next()) {
+                BookDTO bookDTO = new BookDTO();
+                bookDTO.setTitle(resultSet.getString("c_title"));
+                bookDTO.setWriter(resultSet.getString("c_writer"));
+                bookDTO.setReserve(resultSet.getBoolean("c_reserve"));
+                allBooks.add(bookDTO);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return allBooks;
     }
 }

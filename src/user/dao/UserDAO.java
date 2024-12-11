@@ -1,7 +1,9 @@
 package user.dao;
 
 
+import Loan.dto.LoanDTO;
 import book.dto.BookDTO;
+import config.StaticString;
 import user.dto.UserDTO;
 
 import java.sql.*;
@@ -9,20 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
-    private static List<UserDTO> userDTOS = new ArrayList<>();
-
-    public void addUser(UserDTO userDTO) {
-        userDTOS.add(userDTO);
-    }
-
-    public List<UserDTO> getAllUser() {
-        return userDTOS;
-    }
-
     public void addUserToDatabase(UserDTO userDTO){
         String SQL_INSERT = "INSERT INTO tbl_user (c_name, c_dateOfBirth, c_occupation, c_age, c_ssn) VALUES (?,?,?,?,?)";
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_INSERT)) {
 
             preparedStatement.setString(1, userDTO.getName());
@@ -46,7 +38,7 @@ public class UserDAO {
         int count = 0;
 
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_COUNT)) {
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -65,10 +57,10 @@ public class UserDAO {
 
     public UserDTO findUserById(int id) {
         String SQL_SELECT = "SELECT * FROM tbl_user WHERE c_id = ?";
-        UserDTO user = new UserDTO();
+        UserDTO userDTO = new UserDTO();
 
         try (Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_SELECT)) {
 
             preparedStatement.setInt(1, id);
@@ -76,11 +68,11 @@ public class UserDAO {
 
             if (resultSet.next()) {
 
-                user.setName(resultSet.getString("c_name"));
-                user.setDateOfBirth(resultSet.getTimestamp("c_dateOfBirth"));
-                user.setOccupation(resultSet.getString("c_occupation"));
-                user.setAge(resultSet.getInt("c_age"));
-                user.setSsn(resultSet.getString("c_ssn"));
+                userDTO.setName(resultSet.getString("c_name"));
+                userDTO.setDateOfBirth(resultSet.getTimestamp("c_dateOfBirth"));
+                userDTO.setOccupation(resultSet.getString("c_occupation"));
+                userDTO.setAge(resultSet.getInt("c_age"));
+                userDTO.setSsn(resultSet.getString("c_ssn"));
             }
 
         } catch (SQLException e) {
@@ -88,6 +80,32 @@ public class UserDAO {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return user;
+        return userDTO;
+    }
+
+    public List<UserDTO> getUserDTOSFromDatabase() {
+        List<UserDTO> allUsers = new ArrayList<>();
+        String SQL_SELECT = "SELECT * FROM tbl_user";
+
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
+             Statement statement = conn.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
+
+            while (resultSet.next()) {
+                UserDTO userDTO = new UserDTO();
+
+                userDTO.setName(resultSet.getString("c_name"));
+                userDTO.setDateOfBirth(resultSet.getTimestamp("c_dateOfBirth"));
+                userDTO.setOccupation(resultSet.getString("c_occupation"));
+                userDTO.setAge(resultSet.getInt("c_age"));
+                userDTO.setSsn(resultSet.getString("c_ssn"));
+                allUsers.add(userDTO);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return allUsers;
     }
 }

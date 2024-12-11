@@ -3,6 +3,7 @@ package Loan.dao;
 import Loan.dto.LoanDTO;
 import book.dao.BookDAO;
 import book.dto.BookDTO;
+import config.StaticString;
 import user.dao.UserDAO;
 import user.dto.UserDTO;
 
@@ -11,19 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LoanDAO {
-    private static List<LoanDTO> loanDTOS = new ArrayList<>();
-
-    public void addLoaned(LoanDTO loanDTO) {
-        loanDTOS.add(loanDTO);
-    }
-
-    public List<LoanDTO> getAllLoaned() {
-        return loanDTOS;
-    }
-
     public void addLoanToDatabase(LoanDTO loanDTO) {
         String SQL_INSERT = "INSERT INTO tbl_loan (c_userId, c_bookId, c_borrowingDate, c_returningDate) VALUES (?,?,?,?)";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_INSERT)) {
             java.sql.Date sqlDateOfBorrowingDate = new java.sql.Date(loanDTO.getBorrowingDate().getTime());
             java.sql.Date sqlDateOfReturningDate = new java.sql.Date(loanDTO.getReturningDate().getTime());
@@ -50,7 +42,8 @@ public class LoanDAO {
         String SQL_CHECK = "SELECT c_reserve FROM tbl_book WHERE c_id = ?";
         boolean isLoaned = false;
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_CHECK)) {
             preparedStatement.setInt(1, bookId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -68,7 +61,8 @@ public class LoanDAO {
         List<LoanDTO> allLoans = new ArrayList<>();
         String SQL_SELECT = "SELECT * FROM tbl_loan";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              Statement statement = conn.createStatement();
              ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
 
@@ -96,7 +90,8 @@ public class LoanDAO {
 
         String SQL_DELETE = "DELETE FROM tbl_loan WHERE c_id = ?";
 
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/LibManager", "root", "");
+        try (Connection conn = DriverManager.getConnection(
+                StaticString.DBUrl, StaticString.DBUser, StaticString.DBPass);
              PreparedStatement preparedStatement = conn.prepareStatement(SQL_DELETE)) {
 
             preparedStatement.setInt(1, loanId);

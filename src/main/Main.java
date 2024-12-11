@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
+   private UserService userService = new UserServiceImpl();
 
     public static void main(String[] args) {
 
@@ -26,7 +27,7 @@ public class Main {
 
     private void start() {
 
-        Long bookID = 0L;
+       // Long bookID = 0L;
         boolean havingConsule = true;
         while (havingConsule) {
             showMainMenu();
@@ -48,24 +49,14 @@ public class Main {
     }
 
     boolean showUserMenu() {
-        Scanner scanner = new Scanner(System.in);
-        Integer mainCommand = scanner.nextInt();
         boolean notExit = true;
-        switch (mainCommand) {
+        switch (getIntegerFromConsule()) {
             case 1 -> {
                 showMemberMenu();
-                int memberCommand = scanner.nextInt();
+                int memberCommand = getIntegerFromConsule();
                 switch (memberCommand) {
                     case 1 -> {
-                        UserDTO userDTO = new UserDTO();
-                        setUserProperties(userDTO);
-                        UserDAO userDAO = new UserDAO();
-                        Integer lastUserId = userDAO.getUserCount();
-                        userDTO.setId(lastUserId + 1);
-                        System.out.printf("\nYour id number is: %d \n", userDTO.getId());
-                        UserService userService = new UserServiceImpl();
-                        userService.addUser(userDTO);
-
+                        addUser();
                     }
                     case 2 -> {
                         Integer readID = getIdOfUserInConsule();
@@ -74,29 +65,28 @@ public class Main {
                     }
                     case 3 -> {
                         Integer updateID = getIdOfUserInConsule();
-                        UserDTO userDTO = new UserDTO();
+                        UserDTO userDTO = userService.updateUser(updateID);
                         UserService userService = new UserServiceImpl();
-                        userDTO = userService.updateUser(updateID);
                         setUserProperties(userDTO);
                     }
                     case 4 -> {
                         Integer deleteID = getIdOfUserInConsule();
                         UserDTO userDTO = new UserDTO();
-                        UserService userService = new UserServiceImpl();
+
                         userService.deleteUser(deleteID);
                     }
                     case 0 -> {
-                        break;
                     }
                     default -> System.out.println("Wrong!! Please enter a number between 1 to 4! ");
                 }
             }
             case 2 -> {
                 showBookMenu();
-                Integer bookCommand = scanner.nextInt();
+                Integer bookCommand =getIntegerFromConsule();
                 switch (bookCommand) {
                     case 1 -> {
                         BookDTO bookDTO = new BookDTO();
+                        //todo use service layer
                         BookDAO bookDAO = new BookDAO();
                         setBookProperties(bookDTO);
                         Integer lastBookId = bookDAO.getBookCount();
@@ -107,20 +97,18 @@ public class Main {
                     }
                     case 2 -> {
                         Integer readBookId = getIdOfBookInConsule();
-                        BookDTO bookDTO = new BookDTO();
                         BookService bookService = new BookServiceImpl();
                         bookService.readBook(readBookId);
                     }
                     case 3 -> {
                         Integer updateBookId = getIdOfBookInConsule();
-                        BookDTO bookDTO = new BookDTO();
+                        BookDTO bookDTO ;
                         BookService bookService = new BookServiceImpl();
                         bookDTO = bookService.updateBook(updateBookId);
                         setBookProperties(bookDTO);
                     }
                     case 4 -> {
                         Integer deleteBookId = getIdOfBookInConsule();
-                        BookDTO bookDTO = new BookDTO();
                         BookService bookService = new BookServiceImpl();
                         bookService.deleteBook(deleteBookId);
                     }
@@ -132,7 +120,7 @@ public class Main {
             }
             case 3 -> {
                 showBorrowAndReturnMenu();
-                Integer borrowCommand = scanner.nextInt();
+                Integer borrowCommand = getIntegerFromConsule();
                 switch (borrowCommand) {
                     case 1 -> {
                         LoanDAO loanDAO = new LoanDAO();
@@ -156,7 +144,7 @@ public class Main {
                     }
                     case 0 -> {
                         LoanDAO loanDAO = new LoanDAO();
-                        System.out.println(loanDAO.getAllLoaned().toString());
+                        System.out.println(loanDAO.getLoanDTOSFromDatabase().toString());
                     }
                     default -> System.out.println("Please enter 0 or 1 or 2 !!!");
                 }
@@ -175,11 +163,11 @@ public class Main {
             }
             case 5 -> {
                 showSearchMenu();
-                Integer searchCommand = scanner.nextInt();
+                Integer searchCommand = getIntegerFromConsule();
                 switch (searchCommand) {
                     case 1 -> {
                         System.out.println("Please enter his/her name: ");
-                        String searchedName = scanner.nextLine().toLowerCase();
+                        String searchedName = getStringFromConsule();
                         UserServiceImpl userService = new UserServiceImpl();
                         Integer userId = userService.searchUserName(searchedName);
                         if (userId != 0)
@@ -189,7 +177,7 @@ public class Main {
                     }
                     case 2 -> {
                         System.out.println("Please enter book title: ");
-                        String searchedBook = scanner.nextLine().toLowerCase();
+                        String searchedBook = getStringFromConsule();
                         BookServiceImpl bookService = new BookServiceImpl();
                         Integer bookId = bookService.searchBookTitle(searchedBook);
                     }
@@ -205,6 +193,23 @@ public class Main {
             default -> System.out.println("Wrong! Please enter a number from the list that showed!");
         }
         return notExit;
+    }
+
+    private void addUser() {
+        UserDTO userDTO = new UserDTO();
+        setUserProperties(userDTO);
+        UserDAO userDAO = new UserDAO();
+        Integer lastUserId = userDAO.getUserCount();
+        userDTO.setId(lastUserId + 1);
+        System.out.printf("\nYour id number is: %d \n", userDTO.getId());
+        UserService userService = new UserServiceImpl();
+        userService.addUser(userDTO);
+    }
+
+    private static Integer getIntegerFromConsule() {
+        return new Scanner(System.in).nextInt();
+    }private static String getStringFromConsule() {
+        return new Scanner(System.in).nextLine().toLowerCase();
     }
 
     public Date getBirthday() {

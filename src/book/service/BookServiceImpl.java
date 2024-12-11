@@ -3,6 +3,7 @@ package book.service;
 import book.dao.BookDAO;
 import book.dto.BookDTO;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -45,7 +46,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<BookDTO> getAllBook() {
         BookDAO bookDAO = new BookDAO();
-        return bookDAO.getAllBook();
+        return bookDAO.readBooksFromDatabase();
     }
 
     @Override
@@ -65,9 +66,7 @@ public class BookServiceImpl implements BookService {
 
     public Integer searchBookTitle(String bookTitle) {
         Integer bookId = 0;
-        BookDAO bookDAO = new BookDAO();
-        List<BookDTO> allBookDTO = new ArrayList<>();
-        allBookDTO = bookDAO.getAllBook();
+        List<BookDTO> allBookDTO = getAllBook();
         for (BookDTO bookDTO : allBookDTO) {
             if (Objects.equals(bookDTO.getTitle(), bookTitle)) {
                 bookId = bookDTO.getId();

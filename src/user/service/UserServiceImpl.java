@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDTO> getAllUser() {
         UserDAO userDAO = new UserDAO();
-        return userDAO.getAllUser();
+        return userDAO.getUserDTOSFromDatabase();
     }
 
     @Override
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         Integer Id = 0;
         UserDAO userDAO = new UserDAO();
         List<UserDTO> allUserDTO = new ArrayList<>();
-        allUserDTO = userDAO.getAllUser();
+        allUserDTO = userDAO.getUserDTOSFromDatabase();
         for (UserDTO userDTO : allUserDTO) {
             if (Objects.equals(userDTO.getName(), name)) {
                 Id = userDTO.getId();
